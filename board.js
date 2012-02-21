@@ -1,3 +1,4 @@
+var events = require('events');
 
 var generateRandomID = function() {
 	var pool = [];
@@ -11,10 +12,10 @@ var generateRandomID = function() {
 }()
 
 function Board() {
-	// define ID
+	events.EventEmitter.call(this);
+
 	id = generateRandomID();
 
-	// define board, players and last moved
 	board = (function(){
 		var b = [];
 		for(var i=0; i < 9; i++)
@@ -32,7 +33,6 @@ function Board() {
 		return board;
 	};
 	this.makeMove = function(action) {
-		// Gets an entrance of {id: xxxxx, move: 4}
 
 		var playerID = action.id;
 		if (players.indexOf(playerID) == -1)
@@ -45,6 +45,9 @@ function Board() {
 		board[action.move] = playerID;
 		lastMoved = playerID;
 
+		this.emit('statusChanged', board);
+		
+
 		return board;
 	};
 	this.generatePlayer = function() {
@@ -55,6 +58,8 @@ function Board() {
 		return p;	
 	};
 }
+
+Board.prototype = new events.EventEmitter();
 
 function Player(boardID) {
 	var id = generateRandomID();
@@ -68,8 +73,3 @@ function Player(boardID) {
 
 exports.Player = Player;
 exports.Board = Board;
-
-// Unique ID
-// method to spawn two players
-// method to make move
-// event onMoveMade

@@ -32,7 +32,16 @@ exports.testBoard = function(test){
 		move: 3
 	}));
 
-	test.done()
+	var called = false;
+	b.on('statusChanged', function(e){
+		called = true;
+	})
+	b.makeMove({
+		id: player1.getID().playerID,
+		move: 5
+	})
+	test.ok(called);
+	test.done();
 }
 
 exports.testPlayer = function(test){
