@@ -11,21 +11,50 @@ var generateRandomID = function() {
 }()
 
 function Board() {
+	// define ID
 	id = generateRandomID();
-	this.players = [];
+
+	// define board, players and last moved
+	board = (function(){
+		var b = [];
+		for(var i=0; i < 9; i++)
+			b[i] = null;
+		return b;
+	});
+	lastMoved = null;
+	players = [];
+
+	// define methods
 	this.getID = function() {
 		return id;
-	}
-}
+	};
+	this.getBoard = function() {
+		return board;
+	};
+	this.makeMove = function(action) {
+		// Gets an entrance of {id: xxxxx, move: 4}
 
-Board.prototype.generatePlayer = function() {
-	if (this.players.length >= 2)
-		return null;
-	var p = new Player(this.getID());
-	this.players.push(p);
-	return p;
-}
+		var playerID = action.id;
+		if (players.indexOf(playerID) == -1)
+			return false;
+		if (lastMoved == playerID)
+			return false;
+		if (board[action.move] != null)
+			return false;
+		
+		board[action.move] = playerID;
+		lastMoved = playerID;
 
+		return board;
+	};
+	this.generatePlayer = function() {
+		if (players.length >= 2)
+			return null;
+		var p = new Player(id);
+		players.push(p.getID().playerID);
+		return p;	
+	};
+}
 
 function Player(boardID) {
 	var id = generateRandomID();
