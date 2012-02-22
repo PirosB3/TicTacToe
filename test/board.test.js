@@ -1,16 +1,5 @@
 var board = require('../board.js');
 
-// Array.prototype.compare = function(testArr) {
-//     if (this.length != testArr.length) return false;
-//     for (var i = 0; i < testArr.length; i++) {
-//         if (this[i].compare) { 
-//             if (!this[i].compare(testArr[i])) return false;
-//         }
-//         if (this[i] !== testArr[i]) return false;
-//     }
-//     return true;
-// };
-
 exports.testBoard = function(test){
 
 	var b = new board.Board();
@@ -55,18 +44,120 @@ exports.testBoard = function(test){
 		move: 5
 	});
 
-	// var res =  [null,
-	// 			null,
-	// 			null,
-	// 			player2.getID().playerID,
-	// 			player1.getID().playerID,
-	// 			player1.getID().playerID,
-	// 			null,
-	// 			null,
-	// 			null
-	// 			];
-	// test.ok(res.compare(b.getBoard()));
 	test.ok(called);
+	test.done();
+}
+
+exports.testBoardAlgoVertical = function(test){
+
+	var b = new board.Board();
+	var p1 = b.generatePlayer().getID().playerID;
+	var p2 = b.generatePlayer().getID().playerID;
+
+	b.makeMove({
+		id: p1,
+		move: 1
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 2
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 4
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 3
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 7
+	});
+
+	// ended: 1,4,7
+	test.equal('ended', b.getStatus());
+	test.done();
+}
+
+exports.testBoardAlgoHorizontal = function(test){
+
+	var b = new board.Board();
+	var p1 = b.generatePlayer().getID().playerID;
+	var p2 = b.generatePlayer().getID().playerID;
+
+	b.makeMove({
+		id: p1,
+		move: 6
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 2
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 7
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 3
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 8
+	});
+
+	// ended: 6,7,7
+	test.equal('ended', b.getStatus());
+	test.done();
+}
+
+exports.testBoardAlgoDiagonal = function(test){
+
+	var b = new board.Board();
+	var p1 = b.generatePlayer().getID().playerID;
+	var p2 = b.generatePlayer().getID().playerID;
+
+	b.makeMove({
+		id: p1,
+		move: 6
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 8
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 7
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 4
+	});
+
+	b.makeMove({
+		id: p1,
+		move: 1
+	});
+
+	b.makeMove({
+		id: p2,
+		move: 0
+	});
+
+	// ended: 8,4,0
+	test.equal('ended', b.getStatus());
 	test.done();
 }
 
