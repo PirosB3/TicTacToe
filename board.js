@@ -1,74 +1,100 @@
 var events = require('events');
 
-var generateRandomID = function() {
-	var pool = [];
-	return function() {
-		var num = Math.floor(Math.random()*1001);
-		if (pool.indexOf(num) != -1)
-			return this();
-		pool.push(num);
-		return num;
-	}
-}()
+var generateRandomID = function () {
+        var pool = [];
+        return function () {
+            var num = Math.floor(Math.random() * 1001);
+            if (pool.indexOf(num) != -1) return this();
+            pool.push(num);
+            return num;
+        }
+    }()
 
-function Board() {
-	events.EventEmitter.call(this);
+    function Board() {
+        events.EventEmitter.call(this);
+        var id = generateRandomID();
 
-	id = generateRandomID();
+        var board = (function () {
+            var b = [];
+            for (var i = 0; i < 9; i++)
+            	b[i] = null;
+            return b;
+        })();
+        var lastMoved = null;
+        var players = [];
+        var status = 'idle';
 
-	board = (function(){
-		var b = [];
-		for(var i=0; i < 9; i++)
-			b[i] = null;
-		return b;
-	});
-	lastMoved = null;
-	players = [];
+        // define methods
+        var gameFinished = function () {
 
-	// define methods
-	this.getID = function() {
-		return id;
-	};
-	this.getBoard = function() {
-		return board;
-	};
-	this.makeMove = function(action) {
+                for (var i = 0; i < 9; i += 3) {
+                    if ((board[i] == lastMoved) && (board[i + 1] == lastMoved) && (board[i + 2] == lastMoved)) return true;
+                }
 
-		var playerID = action.id;
-		if (players.indexOf(playerID) == -1)
-			return false;
-		if (lastMoved == playerID)
-			return false;
-		if (board[action.move] != null)
-			return false;
-		
-		board[action.move] = playerID;
-		lastMoved = playerID;
+                // check vertical
+                for (var i = 0; i < 3; i++) {
+                    if ((board[i] == lastMoved) && (board[i + 3] == lastMoved) && (board[i + 6] == lastMoved)) return true;
+                }
 
-		this.emit('statusChanged', board);
-		
+                // check diagonal
+                if (board[4] == lastMoved) {
+                    if ((board[0] == lastMoved) && (board[8] == lastMoved)) return true;
 
-		return board;
-	};
-	this.generatePlayer = function() {
-		if (players.length >= 2)
-			return null;
-		var p = new Player(id);
-		players.push(p.getID().playerID);
-		return p;	
-	};
-}
+                    if ((board[2] == lastMoved) && (board[6] == lastMoved)) return true;
+                }
+                return false;
+            }
+        
+        var getID = function () {
+            return id;
+        };
+        var getBoard = function () {
+            return board;
+        };
+        var getStatus = function () {
+            return status;
+        }
+        var makeMove = function (action) {
+
+            var playerID = action.id;
+            var move = action.move;
+
+            if (players.indexOf(playerID) == -1) return false;
+            if (lastMoved == playerID) return false;
+            if (board[move] != null) return false;
+            if ((move < 0) || (move > 8)) return false;
+
+            board[move] = playerID;
+            lastMoved = playerID;
+
+            status = gameFinished() ? "ended" : "playing";
+            this.emit('statusChanged', {board: board, status: status});
+            return board;
+        };
+        var generatePlayer = function () {
+            if (players.length >= 2) return null;
+            var p = new Player(id);
+            players.push(p.getID().playerID);
+            return p;
+        };
+
+        this.getID = getID;
+        this.getBoard = getBoard;
+        this.getStatus = getStatus;
+        this.makeMove = makeMove;
+        this.generatePlayer = generatePlayer;
+    }
 
 Board.prototype = new events.EventEmitter();
 
 function Player(boardID) {
-	var id = generateRandomID();
-	this.getID = function() {
-		return {
-			playerID: id,
-			boardID: boardID
-		}
-	}
+    var id = generateRandomID();
+    this.getID = function () {
+        return {
+            playerID: id,
+            boardID: boardID
+        }
+    }
 }
 
 exports.Player = Player;

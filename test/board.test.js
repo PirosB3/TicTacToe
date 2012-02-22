@@ -1,6 +1,18 @@
 var board = require('../board.js');
 
+// Array.prototype.compare = function(testArr) {
+//     if (this.length != testArr.length) return false;
+//     for (var i = 0; i < testArr.length; i++) {
+//         if (this[i].compare) { 
+//             if (!this[i].compare(testArr[i])) return false;
+//         }
+//         if (this[i] !== testArr[i]) return false;
+//     }
+//     return true;
+// };
+
 exports.testBoard = function(test){
+
 	var b = new board.Board();
 	test.ok(b.getID());
 
@@ -11,6 +23,7 @@ exports.testBoard = function(test){
 
 	// no more players can play
 	test.ok(!b.generatePlayer());
+	test.equal('idle', b.getStatus());
 
 	test.ok(b.makeMove({
 		id: player1.getID().playerID,
@@ -34,12 +47,25 @@ exports.testBoard = function(test){
 
 	var called = false;
 	b.on('statusChanged', function(e){
+		test.equal('playing', e.status);
 		called = true;
-	})
+	});
 	b.makeMove({
 		id: player1.getID().playerID,
 		move: 5
-	})
+	});
+
+	// var res =  [null,
+	// 			null,
+	// 			null,
+	// 			player2.getID().playerID,
+	// 			player1.getID().playerID,
+	// 			player1.getID().playerID,
+	// 			null,
+	// 			null,
+	// 			null
+	// 			];
+	// test.ok(res.compare(b.getBoard()));
 	test.ok(called);
 	test.done();
 }
