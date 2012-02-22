@@ -12,7 +12,7 @@ exports.testBoard = function(test){
 
 	// no more players can play
 	test.ok(!b.generatePlayer());
-	test.equal('idle', b.getStatus());
+	test.equal('idle', b.getStatus().status);
 
 	test.ok(b.makeMove({
 		id: player1.getID().playerID,
@@ -36,7 +36,7 @@ exports.testBoard = function(test){
 
 	var called = false;
 	b.on('statusChanged', function(e){
-		test.equal('playing', e.status);
+		test.equal('playing', e.status.status);
 		called = true;
 	});
 	b.makeMove({
@@ -80,7 +80,9 @@ exports.testBoardAlgoVertical = function(test){
 	});
 
 	// ended: 1,4,7
-	test.equal('ended', b.getStatus());
+	var s = b.getStatus();
+	test.equal('ended', s.status);
+	test.equal(p1, s.winner);
 	test.done();
 }
 
@@ -116,7 +118,9 @@ exports.testBoardAlgoHorizontal = function(test){
 	});
 
 	// ended: 6,7,7
-	test.equal('ended', b.getStatus());
+	var s = b.getStatus();
+	test.equal('ended', s.status);
+	test.equal(p1, s.winner);
 	test.done();
 }
 
@@ -157,7 +161,9 @@ exports.testBoardAlgoDiagonal = function(test){
 	});
 
 	// ended: 8,4,0
-	test.equal('ended', b.getStatus());
+	var s = b.getStatus();
+	test.equal('ended', s.status);
+	test.equal(p2, s.winner);
 	test.done();
 }
 

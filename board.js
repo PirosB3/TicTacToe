@@ -22,7 +22,7 @@ var generateRandomID = function () {
         })();
         var lastMoved = null;
         var players = [];
-        var status = 'idle';
+        var status = {status: 'idle'};
 
         // define methods
         var gameFinished = function () {
@@ -67,7 +67,12 @@ var generateRandomID = function () {
             board[move] = playerID;
             lastMoved = playerID;
 
-            status = gameFinished() ? "ended" : "playing";
+            if (gameFinished()) {
+            	status['status'] = 'ended';
+            	status['winner'] = playerID; 
+            } else {
+            	status['status'] = 'playing';
+            }
             this.emit('statusChanged', {board: board, status: status});
             return board;
         };
